@@ -1,0 +1,515 @@
+@import "../variables";
+@import "../mixins";
+
+/* ==========================================================================
+   Tablero de Juego Simplificado y Distribución de Zona del Mazo
+   ========================================================================== */
+
+.game-workspace {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+// Panel de Control Lateral de Simulaciones (Pruebas de Mazo / Depuración)
+.control-sidebar {
+  background: rgba(13, 17, 23, 0.95);
+  border-left: 2px solid #2d2017;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 320px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.7);
+
+  .sidebar-title {
+    color: #b38b1f;
+    border-bottom: 1px solid rgba(179, 139, 31, 0.3);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .control-group {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      font-family: $fuente-titulos;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #e0e1dd;
+    }
+  }
+}
+
+// Área Principal del Tablero de Juego
+.tabletop-area {
+  margin-right: 320px; // Espacio para el panel lateral
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+// Tablero Partido (Espejo Jugador vs Enemigo)
+.tabletop-board-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+// Áreas de jugador y enemigo simétricas
+.tabletop-half {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  padding: 20px 40px;
+  box-sizing: border-box;
+  gap: 40px;
+  
+  &.is-enemy-side {
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(13, 27, 42, 0.15);
+  }
+
+  &.is-player-side {
+    background: rgba(44, 110, 73, 0.03);
+  }
+}
+
+.deck-zone-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+
+  .deck-zone-label {
+    font-family: $fuente-titulos;
+    color: rgba(224, 225, 221, 0.6);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+}
+
+// Contenedores de las Manos del Jugador y Enemigo (Ampliados y con cartas legibles)
+.player-hand-container, .enemy-hand-container {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 15px 30px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1; /* Permite expandirse horizontalmente en el tablero */
+  max-width: 850px;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+
+  .hand-title {
+    font-family: $fuente-titulos;
+    color: rgba(224, 225, 221, 0.4);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+}
+
+.hand-cards {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: -60px; /* Superposición de cartas (efecto abanico) */
+  height: 190px;
+  width: 100%;
+  padding-bottom: 5px;
+  transition: all 0.3s ease;
+  
+  // Al pasar el mouse por la mano, separamos las cartas para que se vean completas
+  &:hover {
+    gap: 12px;
+    
+    .hand-card-wrapper {
+      transform: translateY(-15px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+// Envoltura individual de cada carta en la mano (Hacemos las cartas mucho más grandes)
+.hand-card-wrapper {
+  position: relative;
+  width: 130px; /* Incrementado para mejor legibilidad */
+  height: 185px; /* Proporción correcta */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  transform-origin: bottom center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+  border-radius: $radio-carta;
+  flex-shrink: 0;
+  
+  &:hover {
+    z-index: 50 !important;
+    transform: translateY(-30px) scale(1.15) !important;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+// Feedback informativo
+.game-feedback {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: #8c8c8c;
+  text-align: center;
+  max-width: 200px;
+}
+
+/* ==========================================================================
+   Grilla y Ranuras de Invocación (Campos de Combate)
+   ========================================================================== */
+
+.battlefield-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.card-slot {
+  width: 110px;
+  height: 160px;
+  border: 2px dashed rgba(179, 139, 31, 0.35);
+  border-radius: 10px;
+  background: rgba(13, 27, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(179, 139, 31, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: #b38b1f;
+    background: rgba(179, 139, 31, 0.12);
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(179, 139, 31, 0.25), inset 0 2px 8px rgba(0, 0, 0, 0.6);
+    
+    &::after {
+      opacity: 1;
+    }
+
+    .slot-icon {
+      color: #ffd700;
+      transform: rotate(15deg);
+    }
+  }
+
+  .slot-icon {
+    font-size: 2.2rem;
+    color: rgba(179, 139, 31, 0.3);
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .slot-label {
+    font-size: 0.7rem;
+    color: rgba(224, 228, 232, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+}
+
+// Línea Divisoria de Madera Central (Turnos)
+.tabletop-divider-line {
+  border-top: 2px dashed rgba(140, 106, 74, 0.15);
+  width: 100%;
+  position: relative;
+  margin: 15px 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: '❈';
+    color: rgba(140, 106, 74, 0.3);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0d1117;
+    padding: 0 10px;
+    font-size: 1.2rem;
+  }
+}
+
+/* ==========================================================================
+   Modales y Animaciones del Mazo
+   ========================================================================== */
+
+.peek-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 15, 23, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  @include flex-center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.peek-modal-content {
+  background: radial-gradient(circle at top, #1c273a 0%, #0d131f 100%);
+  border: 3px solid #b38b1f;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(179, 139, 31, 0.25);
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 700px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-sizing: border-box;
+
+  .peek-title {
+    font-family: $fuente-titulos;
+    color: #e0e1dd;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    
+    span {
+      color: #b38b1f;
+    }
+  }
+
+  .peek-subtitle {
+    font-size: 0.9rem;
+    color: rgba(224, 225, 221, 0.6);
+    margin-bottom: 25px;
+  }
+}
+
+.peek-cards-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.peek-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-close-peek {
+  background: linear-gradient(to bottom, #b38b1f, #8e6d15);
+  border: 1px solid #ffe066;
+  border-radius: 6px;
+  color: #1a1008;
+  font-family: $fuente-titulos;
+  font-weight: bold;
+  padding: 10px 30px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(to bottom, #d4af37, #b38b1f);
+    box-shadow: 0 6px 12px rgba(179,139,31,0.4);
+  }
+}
+
+// Animación de Robo de Carta del Mazo a la Mano (3D)
+.drawing-card-animation {
+  position: fixed;
+  width: calc(180px * var(--deck-scale));
+  height: calc(260px * var(--deck-scale));
+  perspective: 1000px;
+  z-index: 1000;
+  transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.75s ease;
+  pointer-events: none;
+}
+
+// Caja 3D para volteo
+.game-card-render {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: inherit;
+
+  &.is-flipped {
+    transform: rotateY(180deg);
+  }
+}
+
+.card-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  backface-visibility: hidden;
+  box-sizing: border-box;
+}
+
+.card-face-back {
+  background: radial-gradient(circle, #2d1f18 0%, #150d09 100%);
+  border: calc($grosor-borde-carta * var(--deck-scale)) solid #8c6a4a;
+  box-shadow: inset 0 0 calc(15px * var(--deck-scale)) rgba(0,0,0,0.9);
+  
+  &::before {
+    content: '❈';
+    font-size: calc(2rem * var(--deck-scale));
+    color: #8c6a4a;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.65;
+  }
+}
+
+.card-face-front {
+  transform: rotateY(180deg);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: inherit;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+  border: calc($grosor-borde-carta * var(--deck-scale)) solid #6c757d;
+
+  &.faccion-mar { border-color: $color-mar; }
+  &.faccion-bosque { border-color: $color-bosque; }
+  &.faccion-recta { border-color: $color-recta; }
+  &.faccion-religion { border-color: $color-religion; }
+}
+
+/* ==========================================================================
+   Animaciones del Tablero
+   ========================================================================== */
+
+@keyframes block-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px) rotate(-1deg); }
+  40%, 80% { transform: translateX(8px) rotate(1deg); }
+}
+
+@keyframes pulsar-mazo-glow {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+  100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes pulsar-contador {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); box-shadow: 0 5px 12px rgba(255,0,85,0.6); }
+}
+
+@keyframes destello-cruz {
+  0% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 224, 102, 0.6)); }
+  100% { filter: brightness(1.25) drop-shadow(0 0 15px rgba(255, 224, 102, 0.9)); }
+}
+
+@keyframes aura-negra-pulso {
+  0% { box-shadow: 0 0 15px rgba(0,0,0,0.9); }
+  100% { box-shadow: 0 0 35px rgba(0,0,0,0.95), 0 0 50px rgba(13, 27, 42, 0.65); }
+}
+
+@keyframes oleaje-aura {
+  0% { filter: blur(7px) brightness(1); }
+  100% { filter: blur(5px) brightness(1.3) drop-shadow(0 0 10px rgba(57, 230, 221, 0.4)); }
+}
+
+/* Responsividad para Pantallas Medianas y Pequeñas */
+@media (max-width: 1024px) {
+  .control-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 2px solid #2d2017;
+  }
+  
+  .tabletop-area {
+    margin-right: 0;
+    padding: 10px;
+  }
+
+  .tabletop-board-wrapper {
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .tabletop-half {
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+    
+    .player-hand-container, .enemy-hand-container {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+}

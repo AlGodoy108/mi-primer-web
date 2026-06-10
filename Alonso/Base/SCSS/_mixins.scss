@@ -1,0 +1,29 @@
+// Mixin para centrar contenido rápidamente (muy útil en UI de juegos)
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Mixin para el efecto 3D al pasar el mouse sobre una carta
+@mixin efecto-hover-carta {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: $sombra-hover;
+    cursor: pointer;
+    z-index: 10; // Para que pase por encima de otras cartas
+  }
+}
+
+// Mixin para crear temas de cartas según la facción dinámicamente
+@mixin tema-faccion($color-borde, $color-fondo) {
+  border: 3px solid $color-borde;
+  background-color: $color-fondo;
+  
+  .nombre-carta {
+    background-color: $color-borde;
+    color: white;
+  }
+}

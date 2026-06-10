@@ -1,0 +1,20 @@
+// 1. Cargar las funciones base de Bootstrap (ubicadas en node_modules dentro de SCSS)
+@import "node_modules/bootstrap/scss/functions";
+
+// 2. NUESTRAS VARIABLES (Deben ir antes de las variables de Bootstrap para sobrescribirlas)
+@import "variables"; 
+
+// 3. Variables de Bootstrap (Ahora usarán nuestros colores y fuentes chilotas)
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
+
+// 4. Cargar el resto del framework Bootstrap
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// 5. NUESTRAS HERRAMIENTAS Y MÓDULOS DE JUEGO (Estilo de Chiloé)
+@import "mixins";
+@import "base";
+@import "componentes/cartas";
+@import "componentes/mazo";
+@import "componentes/botones";
+@import "layout/tablero";

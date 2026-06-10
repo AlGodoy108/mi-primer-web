@@ -1,0 +1,664 @@
+@charset "UTF-8";
+/* ==========================================================================
+   ARCHIVO MAESTRO SCSS - Juego de Cartas Mitológicas de Chiloé
+   ========================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=MedievalSharp&display=swap");
+body {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  background: radial-gradient(circle, #1a202c 0%, #080b0f 100%);
+  color: #e0e1dd;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "MedievalSharp", cursive;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+@keyframes pulsar-aura {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 0.95;
+    transform: scale(1.03);
+  }
+}
+@keyframes pulsar-contador {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 8px #b38b1f;
+  }
+}
+/* ==========================================================================
+   Componente Mazo de Cartas (Deck) - Escalable y de Doble Cara (Jugador / Enemigo)
+   ========================================================================== */
+.deck-component {
+  --deck-scale: 0.75;
+  position: relative;
+  width: calc(180px * var(--deck-scale));
+  height: calc(260px * var(--deck-scale));
+  margin: 15px auto;
+  perspective: 1000px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.3s ease;
+  /* Modificadores de Tamaño Predefinidos */
+}
+.deck-component.deck-sm {
+  --deck-scale: 0.55;
+}
+.deck-component.deck-md {
+  --deck-scale: 0.75;
+}
+.deck-component.deck-lg {
+  --deck-scale: 0.95;
+}
+.deck-component {
+  /* Efecto de Pila 3D (Escala según la variable --deck-scale) */
+}
+.deck-component::before, .deck-component::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(14px * var(--deck-scale));
+  background: #1c1510;
+  border: calc(2px * var(--deck-scale)) solid #2d2017;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.deck-component::before {
+  transform: translate(calc(3px * var(--deck-scale)), calc(3px * var(--deck-scale))) translateZ(calc(-3px * var(--deck-scale)));
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+.deck-component::after {
+  transform: translate(calc(6px * var(--deck-scale)), calc(6px * var(--deck-scale))) translateZ(calc(-6px * var(--deck-scale)));
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+  z-index: -2;
+}
+.deck-component .deck-pile-shadows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(14px * var(--deck-scale));
+  box-shadow: 1px 1px 0px #18120d, 2px 2px 0px #18120d, calc(3px * var(--deck-scale)) calc(3px * var(--deck-scale)) 0px #18120d, calc(4px * var(--deck-scale)) calc(4px * var(--deck-scale)) 0px #140e0a, calc(5px * var(--deck-scale)) calc(5px * var(--deck-scale)) 0px #140e0a, calc(6px * var(--deck-scale)) calc(6px * var(--deck-scale)) 10px rgba(0, 0, 0, 0.7);
+  z-index: -3;
+  pointer-events: none;
+}
+.deck-component {
+  /* Reverso Premium de la Carta */
+}
+.deck-component .deck-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(14px * var(--deck-scale));
+  background: radial-gradient(circle, #2d1f18 0%, #150d09 100%);
+  border: calc(3px * var(--deck-scale)) solid #8c6a4a;
+  box-shadow: inset 0 0 calc(15px * var(--deck-scale)) rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(10px * var(--deck-scale));
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease;
+}
+.deck-component .deck-card-back .card-pattern-overlay {
+  position: absolute;
+  top: calc(5px * var(--deck-scale));
+  left: calc(5px * var(--deck-scale));
+  right: calc(5px * var(--deck-scale));
+  bottom: calc(5px * var(--deck-scale));
+  border: 1px dashed rgba(140, 106, 74, 0.45);
+  border-radius: calc(14px * var(--deck-scale) - 4px);
+  pointer-events: none;
+}
+.deck-component .deck-card-back .card-pattern-overlay::before {
+  content: "";
+  position: absolute;
+  top: calc(6px * var(--deck-scale));
+  left: calc(6px * var(--deck-scale));
+  right: calc(6px * var(--deck-scale));
+  bottom: calc(6px * var(--deck-scale));
+  border: 1px solid rgba(140, 106, 74, 0.2);
+  border-radius: calc(14px * var(--deck-scale) - 8px);
+}
+.deck-component .deck-card-back .card-emblem {
+  position: relative;
+  width: calc(70px * var(--deck-scale));
+  height: calc(70px * var(--deck-scale));
+  margin: auto;
+  border-radius: 50%;
+  border: 2px solid #b38b1f;
+  background: radial-gradient(circle, #422d1f 0%, #1b1008 100%);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 0 6px rgba(179, 139, 31, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.deck-component .deck-card-back .card-emblem::before {
+  content: "❈";
+  font-size: calc(2rem * var(--deck-scale));
+  color: #b38b1f;
+  text-shadow: 0 0 6px rgba(179, 139, 31, 0.8);
+  font-family: serif;
+}
+.deck-component .deck-card-back .card-logo-text {
+  font-family: "MedievalSharp", cursive;
+  font-size: calc(0.85rem * var(--deck-scale));
+  color: #b38b1f;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  margin-bottom: 2px;
+  z-index: 3;
+}
+.deck-component {
+  /* Animación Hover en Estado Activo */
+}
+.deck-component:hover:not(.is-blocked) {
+  transform: translateY(calc(-6px * var(--deck-scale))) rotateX(6deg) rotateY(-1deg);
+}
+.deck-component:hover:not(.is-blocked) .deck-card-back {
+  border-color: #d4af37;
+  box-shadow: inset 0 0 calc(20px * var(--deck-scale)) rgba(0, 0, 0, 0.9), 0 calc(8px * var(--deck-scale)) calc(16px * var(--deck-scale)) rgba(0, 0, 0, 0.8), 0 0 calc(12px * var(--deck-scale)) rgba(212, 175, 55, 0.3);
+}
+.deck-component:hover:not(.is-blocked)::before {
+  transform: translate(calc(5px * var(--deck-scale)), calc(5px * var(--deck-scale))) translateZ(calc(-5px * var(--deck-scale)));
+}
+.deck-component:hover:not(.is-blocked)::after {
+  transform: translate(calc(9px * var(--deck-scale)), calc(9px * var(--deck-scale))) translateZ(calc(-9px * var(--deck-scale)));
+}
+.deck-component {
+  /* ==========================================
+     EFECTO DE ROBO MÚLTIPLE (Glow y Contador)
+     ========================================== */
+}
+.deck-component.has-multiple-draw:not(.is-blocked) {
+  animation: pulsar-mazo-glow 2s infinite alternate ease-in-out;
+}
+.deck-component.has-multiple-draw:not(.is-blocked) .deck-card-back {
+  border-color: #ffd700;
+  box-shadow: inset 0 0 calc(15px * var(--deck-scale)) rgba(0, 0, 0, 0.9), 0 0 calc(20px * var(--deck-scale)) calc(3px * var(--deck-scale)) rgba(255, 215, 0, 0.6);
+}
+.deck-component .deck-draw-counter {
+  position: absolute;
+  top: calc(-12px * var(--deck-scale));
+  right: calc(-12px * var(--deck-scale));
+  width: calc(36px * var(--deck-scale));
+  height: calc(36px * var(--deck-scale));
+  background: radial-gradient(circle, #ff0055 0%, #aa0033 100%);
+  border: calc(2px * var(--deck-scale)) solid #ffffff;
+  color: white;
+  border-radius: 50%;
+  font-family: "MedievalSharp", cursive;
+  font-size: calc(1.2rem * var(--deck-scale));
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulsar-contador 1.2s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+.deck-component .deck-draw-counter::before {
+  content: "+";
+  font-size: calc(0.8rem * var(--deck-scale));
+  margin-right: 1px;
+}
+.deck-component {
+  /* ==========================================
+     ESTADOS DE BLOQUEO POR FACCIONES (Enemy Effect)
+     ========================================== */
+}
+.deck-component.is-blocked {
+  cursor: not-allowed !important;
+}
+.deck-component.is-blocked .deck-card-back {
+  filter: grayscale(0.3) contrast(0.9);
+  border-color: #4a4a4a;
+}
+.deck-component.is-blocked:hover {
+  transform: none;
+}
+.deck-component.is-blocked:hover::before {
+  transform: translate(calc(3px * var(--deck-scale)), calc(3px * var(--deck-scale))) translateZ(calc(-3px * var(--deck-scale)));
+}
+.deck-component.is-blocked:hover::after {
+  transform: translate(calc(6px * var(--deck-scale)), calc(6px * var(--deck-scale))) translateZ(calc(-6px * var(--deck-scale)));
+}
+.deck-component {
+  /* A. La Recta Provincia: Aura Negra */
+}
+.deck-component.block-recta {
+  animation: aura-negra-pulso 3s infinite alternate ease-in-out;
+}
+.deck-component.block-recta .deck-card-back {
+  border-color: #12081f;
+}
+.deck-component.block-recta::after {
+  content: "";
+  position: absolute;
+  top: calc(-10px * var(--deck-scale));
+  left: calc(-10px * var(--deck-scale));
+  right: calc(-10px * var(--deck-scale));
+  bottom: calc(-10px * var(--deck-scale));
+  border-radius: calc(14px * var(--deck-scale) + 5px);
+  background: radial-gradient(circle, rgba(13, 27, 42, 0) 30%, rgba(13, 27, 42, 0.9) 70%, #03070d 100%);
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: 4;
+  animation: pulsar-aura 2s infinite alternate ease-in-out;
+}
+.deck-component {
+  /* B. Religiosidad: "X" Brillante Amarillo y Blanco */
+}
+.deck-component.block-religion .deck-block-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: calc(14px * var(--deck-scale));
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+.deck-component.block-religion .deck-block-overlay::before, .deck-component.block-religion .deck-block-overlay::after {
+  content: "";
+  position: absolute;
+  width: calc(10px * var(--deck-scale));
+  height: calc(190px * var(--deck-scale));
+  background: linear-gradient(to bottom, #ffffff, #ffe066, #ffc400, #ffffff);
+  border: calc(1.5px * var(--deck-scale)) solid #b38b1f;
+  box-shadow: 0 0 calc(12px * var(--deck-scale)) calc(2px * var(--deck-scale)) rgba(255, 224, 102, 0.8), 0 0 calc(6px * var(--deck-scale)) rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  animation: destello-cruz 1.5s infinite alternate ease-in-out;
+}
+.deck-component.block-religion .deck-block-overlay::before {
+  transform: rotate(45deg);
+}
+.deck-component.block-religion .deck-block-overlay::after {
+  transform: rotate(-45deg);
+}
+.deck-component {
+  /* C. Fuerza del Mar: Aura Marina (Azul/Turquesa) */
+}
+.deck-component.block-mar .deck-card-back {
+  border-color: #1d7874;
+}
+.deck-component.block-mar::after {
+  content: "";
+  position: absolute;
+  top: calc(-12px * var(--deck-scale));
+  left: calc(-12px * var(--deck-scale));
+  right: calc(-12px * var(--deck-scale));
+  bottom: calc(-12px * var(--deck-scale));
+  border-radius: calc(14px * var(--deck-scale) + 4px);
+  background: radial-gradient(circle, rgba(29, 120, 116, 0) 25%, rgba(29, 120, 116, 0.4) 65%, rgba(57, 230, 221, 0.75) 100%);
+  filter: blur(7px);
+  pointer-events: none;
+  z-index: 4;
+  animation: oleaje-aura 3s infinite alternate ease-in-out;
+}
+.deck-component {
+  /* D. Fuerza del Bosque: Madera Encima */
+}
+.deck-component.block-bosque .deck-block-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(14px * var(--deck-scale));
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: calc(20px * var(--deck-scale)) calc(6px * var(--deck-scale));
+  box-sizing: border-box;
+}
+.deck-component.block-bosque .deck-block-overlay .wood-plank {
+  width: 110%;
+  height: calc(26px * var(--deck-scale));
+  background: #5c4033;
+  border: calc(2px * var(--deck-scale)) solid #362217;
+  box-shadow: 0 calc(4px * var(--deck-scale)) calc(8px * var(--deck-scale)) rgba(0, 0, 0, 0.8), inset 0 0 calc(6px * var(--deck-scale)) rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+  transform: rotate(-18deg);
+  position: relative;
+  overflow: hidden;
+}
+.deck-component.block-bosque .deck-block-overlay .wood-plank::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08) 10px, rgba(255, 255, 255, 0.04) 10px, rgba(255, 255, 255, 0.04) 20px);
+}
+.deck-component.block-bosque .deck-block-overlay .wood-plank:nth-child(2) {
+  transform: rotate(20deg) translateY(calc(-6px * var(--deck-scale)));
+  background: #4e3529;
+  border-color: #2b1c14;
+}
+
+/* ==========================================================================
+   Modificador Oponente / Enemigo (Reflejado)
+   ========================================================================== */
+.deck-component.is-enemy .deck-draw-counter {
+  top: auto;
+  bottom: calc(-12px * var(--deck-scale));
+  right: auto;
+  left: calc(-12px * var(--deck-scale));
+}
+
+/* ==========================================================================
+   Botones Personalizados del Juego (Estilo Rústico y Místico)
+   ========================================================================== */
+.btn-chiloe {
+  font-family: "MedievalSharp", cursive;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.btn-chiloe:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+.btn-chiloe:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.btn-chiloe:disabled, .btn-chiloe.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.btn-chiloe {
+  /* Variantes de Facciones para Botones */
+}
+.btn-chiloe.btn-mar {
+  background-color: #1d7874;
+  border-color: rgb(38.9261744966, 161.0738255034, 155.7046979866);
+}
+.btn-chiloe.btn-mar:hover:not(:disabled) {
+  background-color: rgb(36.9409395973, 152.8590604027, 147.7637583893);
+  box-shadow: 0 0 12px rgba(29, 120, 116, 0.6);
+}
+.btn-chiloe.btn-bosque {
+  background-color: #2c6e49;
+  border-color: rgb(58.5714285714, 146.4285714286, 97.1753246753);
+}
+.btn-chiloe.btn-bosque:hover:not(:disabled) {
+  background-color: rgb(55.6571428571, 139.1428571429, 92.3402597403);
+  box-shadow: 0 0 12px rgba(44, 110, 73, 0.6);
+}
+.btn-chiloe.btn-recta {
+  background-color: #0d1b2a;
+  border-color: #2b3a4a;
+}
+.btn-chiloe.btn-recta:hover:not(:disabled) {
+  background-color: rgb(22.6436363636, 47.0290909091, 73.1563636364);
+  box-shadow: 0 0 12px rgba(13, 27, 42, 0.6);
+}
+.btn-chiloe.btn-religion {
+  background-color: #b38b1f;
+  border-color: rgb(218.2428571429, 170.8142857143, 42.7571428571);
+  color: #1a1008;
+  font-weight: bold;
+}
+.btn-chiloe.btn-religion:hover:not(:disabled) {
+  background-color: rgb(219.7485714286, 174.2628571429, 51.4514285714);
+  box-shadow: 0 0 12px rgba(179, 139, 31, 0.6);
+}
+.btn-chiloe.btn-neutral {
+  background-color: #2c302e;
+  border-color: #484f4b;
+}
+.btn-chiloe.btn-neutral:hover:not(:disabled) {
+  background-color: #3d4340;
+}
+.btn-chiloe {
+  /* Botones de Control Pequeños */
+}
+.btn-chiloe.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Tablero de Juego Simplificado y Distribución de Zona del Mazo
+   ========================================================================== */
+.game-workspace {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.control-sidebar {
+  background: rgba(13, 17, 23, 0.95);
+  border-left: 2px solid #2d2017;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 320px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.7);
+}
+.control-sidebar .sidebar-title {
+  color: #b38b1f;
+  border-bottom: 1px solid rgba(179, 139, 31, 0.3);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+.control-sidebar .control-group {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+.control-sidebar .control-group label {
+  display: block;
+  font-family: "MedievalSharp", cursive;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #e0e1dd;
+}
+
+.tabletop-area {
+  margin-right: 320px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.tabletop-board-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+.tabletop-half {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  padding: 20px 40px;
+  box-sizing: border-box;
+  gap: 40px;
+}
+.tabletop-half.is-enemy-side {
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(13, 27, 42, 0.15);
+}
+.tabletop-half.is-player-side {
+  background: rgba(44, 110, 73, 0.03);
+}
+
+.deck-zone-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.deck-zone-container .deck-zone-label {
+  font-family: "MedievalSharp", cursive;
+  color: rgba(224, 225, 221, 0.6);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.player-hand-container, .enemy-hand-container {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 15px 30px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1; /* Permite expandirse horizontalmente en el tablero */
+  max-width: 850px;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.player-hand-container .hand-title, .enemy-hand-container .hand-title {
+  font-family: "MedievalSharp", cursive;
+  color: rgba(224, 225, 221, 0.4);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hand-cards {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: -60px; /* Superposición de cartas (efecto abanico) */
+  height: 190px;
+  width: 100%;
+  padding-bottom: 5px;
+  transition: all 0.3s ease;
+}
+.hand-cards:hover {
+  gap: 12px;
+}
+.hand-cards:hover .hand-card-wrapper {
+  transform: translateY(-15px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+}
+
+.hand-card-wrapper {
+  position: relative;
+  width: 130px; /* Incrementado para mejor legibilidad */
+  height: 185px; /* Proporción correcta */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  transform-origin: bottom center;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.hand-card-wrapper:hover {
+  z-index: 50 !important;
+  transform: translateY(-30px) scale(1.15) !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.2) !important;
+}
+
+.game-feedback {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: #8c8c8c;
+  text-align: center;
+  max-width: 200px;
+}
+
+@media (max-width: 1024px) {
+  .control-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 2px solid #2d2017;
+  }
+  .tabletop-area {
+    margin-right: 0;
+    padding: 10px;
+  }
+  .tabletop-board-wrapper {
+    padding: 10px;
+    gap: 15px;
+  }
+  .tabletop-half {
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+  }
+  .tabletop-half .player-hand-container, .tabletop-half .enemy-hand-container {
+    width: 100%;
+    max-width: 100%;
+  }
+}/*# sourceMappingURL=app.css.map */

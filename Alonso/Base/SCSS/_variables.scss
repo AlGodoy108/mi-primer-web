@@ -1,0 +1,30 @@
+// 1. Tipografías Místicas
+$fuente-titulos: 'MedievalSharp', cursive;
+$fuente-texto: 'Lato', sans-serif;
+
+// 2. Colores de las Facciones (Mitología Chilota)
+
+$color-mar: #1d7874;        // Fuerzas del Mar
+$color-bosque: #2c6e49;     // Fuerzas del Bosque
+$color-recta: #0d1b2a;      // La Recta Provincia
+$color-religion: #b38b1f;   // Religiosidad
+$color-neutral: #6c757d;    // Cartas comunes/tierras básicas
+
+// 3. Variables de Interfaz
+$radio-carta: 12px;
+$sombra-base: 0 4px 8px rgba(0, 0, 0, 0.5);
+$sombra-hover: 0 10px 20px rgba(0, 0, 0, 0.8);
+$grosor-borde-carta: 3px;
+
+// ==========================================
+// SOBRESCRITURA DE VARIABLES DE BOOTSTRAP
+// ==========================================
+$primary: $color-mar;
+$success: $color-bosque;
+$dark: $color-recta;
+$warning: $color-religion;
+
+$font-family-base: $fuente-texto;
+$headings-font-family: $fuente-titulos;
+$body-bg: #11151c; // Fondo oscuro para el tablero web
+$body-color: #e0e1dd;

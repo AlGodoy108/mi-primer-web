@@ -1,0 +1,66 @@
+.tarjeta-mito {
+  width: 250px;
+  height: 350px;
+  border-radius: $radio-carta;
+  box-shadow: $sombra-base;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  // Llamamos al Mixin de animación
+  @include efecto-hover-carta;
+
+  // Clases modificadoras usando el padre (&) y el mixin de tema
+  &.faccion-mar { @include tema-faccion($color-mar, #e0f2f1); }
+  &.faccion-bosque { @include tema-faccion($color-bosque, #e8f5e9); }
+  &.faccion-recta { @include tema-faccion($color-recta, #cecece); }
+  &.faccion-religion { @include tema-faccion($color-religion, #fff8e1); }
+
+  // Estructura interna de la carta (Anidamiento SASS)
+  .header-carta {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-family: $fuente-titulos;
+    font-size: 1.2rem;
+    
+    .coste-esencia {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      @include flex-center; // Llamamos al mixin de centrado
+    }
+  }
+
+  .imagen-mito {
+    flex-grow: 1;
+    background-size: cover;
+    background-position: center;
+    border-top: 2px solid rgba(0,0,0,0.2);
+    border-bottom: 2px solid rgba(0,0,0,0.2);
+  }
+
+  .cuerpo-texto {
+    padding: 10px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    height: 100px;
+    overflow-y: auto;
+  }
+
+  .stats-combate {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #222;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: 1px solid #777;
+  }
+}

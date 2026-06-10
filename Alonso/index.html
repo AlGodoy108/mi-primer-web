@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mitos de Chiloé - Cementerio de Cartas</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Demostración interactiva de la zona del Cementerio de Cartas (Graveyard Zone) para Mitos de Chiloé utilizando CSS base.">
+  <meta name="keywords" content="Mitos de Chiloé, Cementerio, Graveyard, Chiloé Mitológico">
+  
+  <!-- Google Fonts: MedievalSharp (Mística), Lato (Lectura), Cinzel (Premium) y Outfit (Moderna) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&family=MedievalSharp&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS CDN (Requerido para el diseño responsivo y la funcionalidad de modales) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <!-- Bootstrap Icons CDN para iconos místicos y funcionales -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <!-- Hojas de estilo base provistas en el proyecto -->
+  <link rel="stylesheet" href="Base/css/app.css">
+  <link rel="stylesheet" href="Base/css/board.css">
+
+  <style>
+    /* ==========================================================================
+       ESTILOS DEL CEMENTERIO (GRAVEYARD-ZONE) ADAPTADOS AL CSS BASE
+       ========================================================================== */
+    .graveyard-zone {
+      position: relative;
+      width: 260px;
+      height: 360px;
+      /* Uso de la variable --color-alerce (verde místico) con opacidad */
+      background-color: rgba(27, 48, 34, 0.45);
+      /* Borde dashed con tonalidad de madera rústica --color-tejuela */
+      border: 3px dashed rgba(139, 94, 60, 0.5);
+      border-radius: 12px; /* Coherente con $radio-carta */
+      padding: 15px;
+      margin: 10px;
+      /* Sombra premium del archivo board.css */
+      box-shadow: var(--shadow-premium);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+    }
+
+    /* Estado hover de la zona (Iluminación oro místico y elevación) */
+    .graveyard-zone:hover {
+      background-color: rgba(27, 48, 34, 0.7);
+      border-color: var(--color-oro);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2), var(--shadow-premium);
+      transform: translateY(-8px);
+    }
+
+    .graveyard-zone:hover .rotulo-zona {
+      color: var(--color-oro);
+    }
+
+    /* Badge contador de cartas (Flotante) */
+    .graveyard-zone .badge {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background-color: var(--color-alerce) !important;
+      color: var(--color-oro) !important;
+      border: 1.5px solid var(--color-oro);
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+      z-index: 10;
+    }
+
+    /* Pila de descarte y centrado de miniatura */
+    .graveyard-zone .pila-descarte {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Rótulo decorativo del cementerio */
+    .graveyard-zone .rotulo-zona {
+      margin-top: 12px;
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      color: var(--color-bruma-muted);
+      text-align: center;
+      transition: color 0.3s ease;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    /* ==========================================================================
+       ESTILOS DEL FRENTE DE CARTAS (.tarjeta-mito)
+       ========================================================================== */
+    .tarjeta-mito {
+      position: relative;
+      width: 200px;
+      height: 280px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background-color: #1a1a1a;
+      user-select: none;
+    }
+
+    /* Colores por Facción */
+    .tarjeta-mito.faccion-mar {
+      border: 3px solid var(--color-chilote);
+      background: linear-gradient(135deg, #132731 0%, #1c3b4d 100%);
+      color: #e2f1f8;
+    }
+    .tarjeta-mito.faccion-mar .nombre-carta {
+      background-color: var(--color-chilote);
+      color: #fff;
+    }
+    .tarjeta-mito.faccion-mar .cuerpo-texto {
+      background: rgba(20, 35, 45, 0.95);
+      color: #b0c4de;
+      border-top: 1px solid rgba(44, 95, 120, 0.3);
+    }
+
+    .tarjeta-mito.faccion-bosque {
+      border: 3px solid var(--color-alerce);
+      background: linear-gradient(135deg, #0e1a12 0%, #152b1d 100%);
+      color: #e8f5e9;
+    }
+    .tarjeta-mito.faccion-bosque .nombre-carta {
+      background-color: var(--color-alerce);
+      color: #fff;
+    }
+    .tarjeta-mito.faccion-bosque .cuerpo-texto {
+      background: rgba(14, 26, 18, 0.95);
+      color: #a5d6a7;
+      border-top: 1px solid rgba(27, 48, 34, 0.3);
+    }
+
+    .tarjeta-mito.faccion-recta {
+      border: 3px solid #3a1c52;
+      background: linear-gradient(135deg, #1f0b2a 0%, #0e0414 100%);
+      color: #f1e4fc;
+    }
+    .tarjeta-mito.faccion-recta .nombre-carta {
+      background-color: #4a2366;
+      color: #fff;
+    }
+    .tarjeta-mito.faccion-recta .cuerpo-texto {
+      background: rgba(22, 8, 32, 0.95);
+      color: #d1b3e8;
+      border-top: 1px solid rgba(74, 35, 102, 0.3);
+    }
+
+    .tarjeta-mito.faccion-religion {
+      border: 3px solid var(--color-oro);
+      background: linear-gradient(135deg, #271f07 0%, #3e310c 100%);
+      color: #fff8e1;
+    }
+    .tarjeta-mito.faccion-religion .nombre-carta {
+      background-color: var(--color-oro);
+      color: #211502;
+    }
+    .tarjeta-mito.faccion-religion .cuerpo-texto {
+      background: rgba(30, 24, 8, 0.95);
+      color: #ffe082;
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    /* Estructura Interna de la Carta */
+    .tarjeta-mito .header-carta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 0.85rem;
+    }
+    .tarjeta-mito .nombre-carta {
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .tarjeta-mito .coste-esencia {
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--color-oro);
+      border: 1px solid var(--color-oro);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(212,175,55,0.4);
+    }
+    .tarjeta-mito .imagen-mito {
+      flex-grow: 1;
+      background-size: cover;
+      background-position: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+      min-height: 70px;
+    }
+    .tarjeta-mito .cuerpo-texto {
+      padding: 5px 8px;
+      font-size: 0.65rem;
+      line-height: 1.25;
+      height: 60px;
+      overflow-y: auto;
+      font-family: 'Outfit', sans-serif;
+    }
+    .tarjeta-mito .stats-combate {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 5;
+    }
+
+    /* Modificadores de la miniatura espectral */
+    .tarjeta-mito.miniatura-espectral {
+      transform: rotate(-3deg);
+      filter: grayscale(100%) opacity(0.55) sepia(0.2);
+      transition: all 0.3s ease;
+    }
+    .graveyard-zone:hover .miniatura-espectral {
+      filter: grayscale(40%) opacity(0.85) sepia(0.1);
+      transform: rotate(0deg) scale(1.02);
+    }
+
+    /* Estilos del modal y almas derrotadas */
+    .tarjeta-mito.alma-derrotada {
+      filter: grayscale(30%) opacity(0.85);
+      width: 170px;
+      height: 240px;
+      margin: 10px auto;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.8);
+    }
+    .tarjeta-mito.alma-derrotada .nombre-carta {
+      max-width: 75px;
+      font-size: 0.7rem;
+    }
+    .tarjeta-mito.alma-derrotada .header-carta {
+      font-size: 0.8rem;
+    }
+    .tarjeta-mito.alma-derrotada .cuerpo-texto {
+      font-size: 0.6rem;
+      height: 52px;
+    }
+    .tarjeta-mito.alma-derrotada:hover {
+      filter: grayscale(0%) opacity(1);
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 12px 24px rgba(212, 175, 55, 0.3);
+      border-color: var(--color-oro);
+    }
+
+    /* Ajuste responsivo de la maqueta */
+    body {
+      background-color: var(--color-dark-bg);
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(27, 48, 34, 0.7) 0%, transparent 80%),
+        linear-gradient(to bottom, #070d0a 0%, #0d1a12 50%, #070d0a 100%);
+      color: var(--color-bruma);
+      font-family: var(--font-body);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Capa de Bruma Ambiental -->
+  <div class="fog"></div>
+
+  <!-- Contenedor Principal (Solo Cementerio) -->
+  <main class="container d-flex flex-column align-items-center justify-content-center min-vh-100 py-4" style="z-index: 2; position: relative;">
+    
+    <!-- Encabezado Místico -->
+    <header class="text-center mb-5">
+      <h1 class="text-warning text-uppercase letter-spacing-2 font-titulos display-4 mb-2" style="font-family: var(--font-title); color: var(--color-oro) !important; text-shadow: 0 0 15px rgba(212,175,55,0.35);">Mitos de Chiloé</h1>
+      <p class="text-light opacity-75" style="font-family: var(--font-body); letter-spacing: 1px;">Demostración del Cementerio de Cartas (Graveyard Zone)</p>
+    </header>
+
+    <!-- Fila Central con el Cementerio -->
+    <div class="row w-100 justify-content-center align-items-center mb-4">
+      <div class="col-auto d-flex justify-content-center">
+        
+        <!-- COMPONENTE: CEMENTERIO DE CARTAS -->
+        <div class="graveyard-zone" data-bs-toggle="modal" data-bs-target="#modalCementerio" role="button" aria-label="Ver cartas derrotadas">
+          
+          <!-- Contador de cartas (Badge) -->
+          <span class="badge rounded-pill">
+            <i class="bi bi-skull me-1"></i> <span id="contador-almas">4</span> Almas
+          </span>
+          
+          <!-- Pila de Descarte Visual (Carta Espectral superior) -->
+          <div class="pila-descarte">
+            <div class="tarjeta-mito faccion-mar miniatura-espectral">
+              <div class="header-carta">
+                <span class="nombre-carta">Pincoya</span>
+                <span class="coste-esencia">3</span>
+              </div>
+              <div class="imagen-mito" style="background-image: url('Base/COMPONENTE/Cartas/110.png');"></div>
+              <div class="cuerpo-texto">
+                Derrotada. Traía abundancia marina a las costas chilotas.
+              </div>
+              <div class="stats-combate">3 / 4</div>
+            </div>
+          </div>
+
+          <!-- Rótulo de Identificación -->
+          <div class="rotulo-zona">
+            <i class="bi bi-clouds-fill me-1"></i> Cementerio
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Instrucciones de Uso -->
+    <footer class="mt-4 text-center text-muted" style="font-family: var(--font-body);">
+      <p class="small mb-0">Pasa el mouse sobre el cementerio para ver el efecto hover, y haz clic para abrir el "Visor de Almas".</p>
+    </footer>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: VISOR DE ALMAS (GRAVEYARD MODAL) -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="modalCementerio" tabindex="-1" aria-labelledby="modalCementerioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content text-light border border-secondary rounded-3 bg-dark-custom" style="border-color: var(--color-tejuela-dark) !important;">
+        
+        <!-- Cabecera del Modal -->
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title font-titulos text-warning" id="modalCementerioLabel" style="font-family: var(--font-title); color: var(--color-oro) !important;">
+            <i class="bi bi-eye-fill me-2 text-muted"></i> Visor de Almas: El Cementerio
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Contenido / Cartas Derrotadas -->
+        <div class="modal-body bg-pattern-cementerio py-4">
+          <p class="text-muted text-center mb-4 italic-text" style="font-family: var(--font-body); font-style: italic;">
+            "Las almas derrotadas descansan en la niebla de Chiloé..."
+          </p>
+          
+          <div class="row g-4 justify-content-center">
+            
+            <!-- Carta 1: Facción Mar (Cuchivilu) -->
+            <div class="col-6 col-md-3 d-flex justify-content-center">
+              <div class="tarjeta-mito faccion-mar alma-derrotada">
+                <div class="header-carta">
+                  <span class="nombre-carta">Cuchivilu</span>
+                  <span class="coste-esencia">4</span>
+                </div>
+                <div class="imagen-mito" style="background-image: url('Base/COMPONENTE/Cartas/61.png');"></div>
+                <div class="cuerpo-texto">
+                  Híbrido de cerdo y culebra que devasta la costa de los pescadores.
+                </div>
+                <div class="stats-combate">5 / 4</div>
+              </div>
+            </div>
+
+            <!-- Carta 2: Facción Recta Provincia (Ivunche) -->
+            <div class="col-6 col-md-3 d-flex justify-content-center">
+              <div class="tarjeta-mito faccion-recta alma-derrotada">
+                <div class="header-carta">
+                  <span class="nombre-carta">Ivunche</span>
+                  <span class="coste-esencia">5</span>
+                </div>
+                <div class="imagen-mito" style="background-image: url('Base/COMPONENTE/Cartas/22.png');"></div>
+                <div class="cuerpo-texto">
+                  Guardián de la cueva que deforma el espacio para repeler atacantes.
+                </div>
+                <div class="stats-combate">6 / 6</div>
+              </div>
+            </div>
+
+            <!-- Carta 3: Facción Bosque (Trauco) -->
+            <div class="col-6 col-md-3 d-flex justify-content-center">
+              <div class="tarjeta-mito faccion-bosque alma-derrotada">
+                <div class="header-carta">
+                  <span class="nombre-carta">Trauco</span>
+                  <span class="coste-esencia">2</span>
+                </div>
+                <div class="imagen-mito" style="background-image: url('Base/COMPONENTE/Cartas/9.png');"></div>
+                <div class="cuerpo-texto">
+                  Espíritu de los bosques chilotes de mirada penetrante y paralizante.
+                </div>
+                <div class="stats-combate">3 / 2</div>
+              </div>
+            </div>
+
+            <!-- Carta 4: Facción Mar (Pincoya) -->
+            <div class="col-6 col-md-3 d-flex justify-content-center">
+              <div class="tarjeta-mito faccion-mar alma-derrotada">
+                <div class="header-carta">
+                  <span class="nombre-carta">Pincoya</span>
+                  <span class="coste-esencia">3</span>
+                </div>
+                <div class="imagen-mito" style="background-image: url('Base/COMPONENTE/Cartas/110.png');"></div>
+                <div class="cuerpo-texto">
+                  Atrae la abundancia de peces a las playas marinas de Chiloé.
+                </div>
+                <div class="stats-combate">3 / 4</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        
+        <!-- Botón de Cerrar (Estilizado con clases del CSS Base) -->
+        <div class="modal-footer border-top border-secondary bg-dark justify-content-end">
+          <button type="button" class="btn btn-secondary px-4 btn-game btn-chiloe btn-neutral btn-sm" data-bs-dismiss="modal">Cerrar Visor</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Carga de Bootstrap Bundle desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
